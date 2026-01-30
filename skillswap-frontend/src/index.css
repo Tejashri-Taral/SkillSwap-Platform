@@ -107,3 +107,20 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Dark mode styles */
+.dark-mode {
+  --primary-color: #818cf8;
+  --primary-dark: #6366f1;
+  --secondary-color: #10b981;
+  --accent-color: #f59e0b;
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --bg-card: #374151;
+  --border-color: #4b5563;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+}

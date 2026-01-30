@@ -1,10 +1,13 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import React from 'react';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -22,12 +25,13 @@ const Header = () => {
       position: 'sticky',
       top: 0,
       zIndex: 100,
+      padding: '0.5rem 0',
     },
     headerContainer: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '1rem 0',
+      padding: '0.5rem 0',
     },
     logo: {
       fontSize: '1.5rem',
@@ -37,21 +41,22 @@ const Header = () => {
     },
     navLinks: {
       display: 'flex',
-      gap: '2rem',
+      gap: '1.5rem',
       alignItems: 'center',
     },
     navLink: {
       color: 'var(--text-secondary)',
       textDecoration: 'none',
       fontWeight: 500,
-      transition: 'color 0.2s ease',
+      fontSize: '0.95rem',
+      padding: '0.5rem 0',
+      position: 'relative',
     },
     navLinkActive: {
       color: 'var(--primary-color)',
     },
     userDropdown: {
       position: 'relative',
-      marginLeft: '1rem',
     },
     userBtn: {
       display: 'flex',
@@ -62,7 +67,7 @@ const Header = () => {
       border: '1px solid var(--border-color)',
       borderRadius: '2rem',
       cursor: 'pointer',
-      transition: 'all 0.2s ease',
+      fontSize: '0.95rem',
     },
     userAvatar: {
       width: '32px',
@@ -74,37 +79,77 @@ const Header = () => {
       alignItems: 'center',
       justifyContent: 'center',
       fontWeight: 600,
+      fontSize: '0.9rem',
     },
     dropdownMenu: {
       position: 'absolute',
       top: '100%',
       right: 0,
-      marginTop: '0.5rem',
+      marginTop: '0.125rem', // keep it very close to avoid a gap that causes flicker
       backgroundColor: 'var(--bg-primary)',
       border: '1px solid var(--border-color)',
       borderRadius: '0.5rem',
       boxShadow: 'var(--shadow-lg)',
-      minWidth: '200px',
-      display: 'none',
-      zIndex: 1000,
+      minWidth: '180px',
+      zIndex: 1000
     },
     dropdownItem: {
       display: 'block',
       padding: '0.75rem 1rem',
       color: 'var(--text-primary)',
       textDecoration: 'none',
-      transition: 'background-color 0.2s ease',
+      fontSize: '0.9rem',
       border: 'none',
       background: 'none',
       width: '100%',
       textAlign: 'left',
       cursor: 'pointer',
     },
-    logoutItem: {
-      color: '#ef4444',
-      borderTop: '1px solid var(--border-color)',
-    }
+    themeToggle: {
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '1.2rem',
+      color: 'var(--text-secondary)',
+      padding: '0.5rem',
+      borderRadius: '0.5rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: '0.5rem',
+    },
   };
+
+  // dropdown visibility + short hide-delay to prevent flicker/gap issues
+  const [showDropdown, setShowDropdown] = React.useState(false);
+  const hideTimeoutRef = React.useRef(null);
+
+  const handleMouseEnter = () => {
+    // cancel any pending hide
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    setShowDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    // add slight delay before hiding so user can move mouse to dropdown and click
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+      hideTimeoutRef.current = null;
+    }, 180); // 180ms works well — adjust if you want it shorter/longer
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <header style={styles.header}>
@@ -159,27 +204,53 @@ const Header = () => {
           >
             Sessions
           </Link>
-          
-          <div 
-            style={styles.userDropdown}
-            onMouseEnter={(e) => {
-              e.currentTarget.querySelector('.dropdown-menu').style.display = 'block';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.querySelector('.dropdown-menu').style.display = 'none';
-            }}
+
+          <button
+            onClick={toggleTheme}
+            style={styles.themeToggle}
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            <button style={styles.userBtn}>
+            {isDarkMode ? '🌙' : '☀️'}
+          </button>
+
+          {/* User Dropdown */}
+          <div
+            style={styles.userDropdown}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button
+              style={styles.userBtn}
+              // also keep it open if the user focuses via keyboard
+              onFocus={handleMouseEnter}
+              onBlur={handleMouseLeave}
+            >
               <div style={styles.userAvatar}>
                 {user?.firstName?.[0] || 'U'}
               </div>
               <span>{user?.firstName || 'User'}</span>
             </button>
-            <div className="dropdown-menu" style={styles.dropdownMenu}>
+
+            <div
+              style={{
+                ...styles.dropdownMenu,
+                display: showDropdown ? 'block' : 'none'
+              }}
+              // ensure hovering over the menu keeps it open
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <Link to="/profile" style={styles.dropdownItem}>
                 Profile
               </Link>
-              <button onClick={handleLogout} style={{...styles.dropdownItem, ...styles.logoutItem}}>
+              <button
+                onClick={handleLogout}
+                style={{
+                  ...styles.dropdownItem,
+                  color: '#ef4444',
+                  borderTop: '1px solid var(--border-color)'
+                }}
+              >
                 Logout
               </button>
             </div>

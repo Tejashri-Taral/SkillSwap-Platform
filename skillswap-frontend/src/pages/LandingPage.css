@@ -1,0 +1,117 @@
+/* Landing Page Styles */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.landing-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  background-color: #1f2937; /* Dark gray */
+  color: white;
+}
+
+.landing-navbar .logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.nav-links a {
+  margin-left: 1rem;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+}
+
+.nav-links .btn-primary {
+  background-color: #3b82f6;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.nav-links .btn-primary:hover {
+  background-color: #2563eb;
+}
+
+/* Hero Section */
+.landing-hero {
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  color: white;
+  text-align: center;
+  padding: 5rem 1rem;
+}
+
+.hero-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.hero-btn {
+  background-color: #fff;
+  color: #3b82f6;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.hero-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* Features Section */
+.features {
+  padding: 4rem 2rem;
+  text-align: center;
+  background-color: #f9fafb;
+}
+
+.features h3 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.feature-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.feature-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 300px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Footer */
+.landing-footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #1f2937;
+  color: white;
+}

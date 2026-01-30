@@ -49,6 +49,20 @@ const RequestsPage = () => {
     }
   };
 
+  // In your Requests page, add this to each accepted request:
+<button onClick={() => handleCreateSession(request.id)}>
+  Create Session
+</button>
+
+// And this handler:
+const handleCreateSession = async (requestId) => {
+  try {
+    await sessionsAPI.createSessionFromRequest(requestId);
+    toast.success('Session created!');
+  } catch (error) {
+    toast.error('Failed to create session');
+  }
+};
   const handleCancelRequest = async (requestId) => {
     try {
       await swapRequestsAPI.cancelRequest(requestId);

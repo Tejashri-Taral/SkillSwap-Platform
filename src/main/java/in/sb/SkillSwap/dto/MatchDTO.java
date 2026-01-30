@@ -3,8 +3,8 @@ package in.sb.SkillSwap.dto;
 public class MatchDTO {
     private UserDTO user;
     private Integer matchScore;
-    private SkillDTO mutualTeachSkill; // Skill they can teach you
-    private SkillDTO mutualLearnSkill; // Skill you can teach them
+    private SkillDTO skillTheyCanTeachYou;    // They → You (Other user teaches you)
+    private SkillDTO skillYouCanTeachThem;    // You → Them (You teach other user)
     private String matchDescription;
 
     // Default constructor
@@ -12,11 +12,12 @@ public class MatchDTO {
     }
 
     // Constructor
-    public MatchDTO(UserDTO user, Integer matchScore, SkillDTO mutualTeachSkill, SkillDTO mutualLearnSkill, String matchDescription) {
+    public MatchDTO(UserDTO user, Integer matchScore, SkillDTO skillTheyCanTeachYou, 
+                   SkillDTO skillYouCanTeachThem, String matchDescription) {
         this.user = user;
         this.matchScore = matchScore;
-        this.mutualTeachSkill = mutualTeachSkill;
-        this.mutualLearnSkill = mutualLearnSkill;
+        this.skillTheyCanTeachYou = skillTheyCanTeachYou;
+        this.skillYouCanTeachThem = skillYouCanTeachThem;
         this.matchDescription = matchDescription;
     }
 
@@ -37,20 +38,20 @@ public class MatchDTO {
         this.matchScore = matchScore;
     }
 
-    public SkillDTO getMutualTeachSkill() {
-        return mutualTeachSkill;
+    public SkillDTO getSkillTheyCanTeachYou() {
+        return skillTheyCanTeachYou;
     }
 
-    public void setMutualTeachSkill(SkillDTO mutualTeachSkill) {
-        this.mutualTeachSkill = mutualTeachSkill;
+    public void setSkillTheyCanTeachYou(SkillDTO skillTheyCanTeachYou) {
+        this.skillTheyCanTeachYou = skillTheyCanTeachYou;
     }
 
-    public SkillDTO getMutualLearnSkill() {
-        return mutualLearnSkill;
+    public SkillDTO getSkillYouCanTeachThem() {
+        return skillYouCanTeachThem;
     }
 
-    public void setMutualLearnSkill(SkillDTO mutualLearnSkill) {
-        this.mutualLearnSkill = mutualLearnSkill;
+    public void setSkillYouCanTeachThem(SkillDTO skillYouCanTeachThem) {
+        this.skillYouCanTeachThem = skillYouCanTeachThem;
     }
 
     public String getMatchDescription() {

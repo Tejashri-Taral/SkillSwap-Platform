@@ -1,12 +1,24 @@
-const SessionCard = ({ session }) => {
+const SessionCard = ({ session, onStartMeeting, onCompleteSession, onViewDetails }) => {
   const getStatusStyle = () => {
     switch (session.status) {
+      case 'CREATED': return { backgroundColor: '#fef3c7', color: '#92400e' };
       case 'SCHEDULED': return { backgroundColor: '#fef3c7', color: '#92400e' };
       case 'IN_PROGRESS': return { backgroundColor: '#dbeafe', color: '#1e40af' };
       case 'COMPLETED': return { backgroundColor: '#d1fae5', color: '#065f46' };
       case 'CANCELLED': return { backgroundColor: '#f3f4f6', color: '#374151' };
       default: return { backgroundColor: '#f3f4f6', color: '#374151' };
     }
+  };
+
+  const canJoinMeeting = () => {
+    return session.meetingUrl && 
+           (session.status === 'CREATED' || 
+            session.status === 'SCHEDULED' || 
+            session.status === 'IN_PROGRESS');
+  };
+
+  const canCompleteSession = () => {
+    return session.status !== 'COMPLETED' && session.status !== 'CANCELLED';
   };
 
   const styles = {
@@ -76,6 +88,16 @@ const SessionCard = ({ session }) => {
       fontWeight: 500,
       flex: 1,
     },
+    completeButton: {
+      backgroundColor: '#f59e0b',
+      color: 'white',
+      border: 'none',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.5rem',
+      cursor: 'pointer',
+      fontWeight: 500,
+      flex: 1,
+    },
     detailsButton: {
       backgroundColor: 'var(--primary-color)',
       color: 'white',
@@ -91,6 +113,12 @@ const SessionCard = ({ session }) => {
       color: '#9ca3af',
       cursor: 'not-allowed',
     },
+    meetingLink: {
+      color: '#3b82f6',
+      textDecoration: 'underline',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+    },
   };
 
   const statusStyle = getStatusStyle();
@@ -98,7 +126,7 @@ const SessionCard = ({ session }) => {
   return (
     <div style={styles.card}>
       <div style={styles.header}>
-        <h3 style={styles.title}>{session.title}</h3>
+        <h3 style={styles.title}>{session.title || 'Skill Swap Session'}</h3>
         <span style={{ ...styles.status, ...statusStyle }}>
           {session.status}
         </span>
@@ -127,27 +155,39 @@ const SessionCard = ({ session }) => {
             <span style={styles.detailValue}>{session.meetingPlatform}</span>
           </div>
         )}
+
+        {session.meetingUrl && (
+          <div style={styles.detailRow}>
+            <span style={styles.detailLabel}>Meeting:</span>
+            <span style={styles.detailValue}>
+              <span 
+                style={styles.meetingLink}
+                onClick={() => window.open(session.meetingUrl, '_blank')}
+              >
+                Join now
+              </span>
+            </span>
+          </div>
+        )}
       </div>
 
-      {session.sessionNotes && (
+      {session.sessionNotes ? (
         <div style={styles.notes}>
           <strong>Notes:</strong> {session.sessionNotes}
         </div>
-      )}
-
-      {!session.sessionNotes && (
+      ) : (
         <div style={styles.notes}>
           <em>No notes added yet</em>
         </div>
       )}
 
       <div style={styles.buttonGroup}>
-        {session.meetingUrl && (session.status === 'SCHEDULED' || session.status === 'IN_PROGRESS') ? (
+        {canJoinMeeting() ? (
           <button
             style={styles.joinButton}
-            onClick={() => window.open(session.meetingUrl, '_blank')}
+            onClick={onStartMeeting}
           >
-            Join Session
+            {session.status === 'CREATED' ? 'Start Session' : 'Join Session'}
           </button>
         ) : (
           <button style={{ ...styles.joinButton, ...styles.disabledButton }} disabled>
@@ -155,12 +195,18 @@ const SessionCard = ({ session }) => {
           </button>
         )}
         
+        {canCompleteSession() && (
+          <button
+            style={styles.completeButton}
+            onClick={onCompleteSession}
+          >
+            Complete Session
+          </button>
+        )}
+
         <button
           style={styles.detailsButton}
-          onClick={() => {
-            // In a real app, this would navigate to session details
-            alert('Session details would show here');
-          }}
+          onClick={onViewDetails}
         >
           View Details
         </button>

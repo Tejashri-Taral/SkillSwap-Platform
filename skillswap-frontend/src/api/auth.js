@@ -34,6 +34,26 @@ export const authAPI = {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   },
+  logout: () => {
+  try {
+    // Clear localStorage items
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    // Clear session storage
+    sessionStorage.clear();
+
+    // Remove axios Authorization header
+    delete axiosInstance.defaults.headers.common['Authorization'];
+
+    console.log('Logout successful');
+    return true;
+
+  } catch (err) {
+    console.error('Logout failed:', err);
+    return false;
+  }
+},
 
   // Get current user
   getCurrentUser: () => {

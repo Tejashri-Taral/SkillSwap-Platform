@@ -7,7 +7,8 @@ const MatchCard = ({ match }) => {
   const [message, setMessage] = useState('');
 
   const handleSendRequest = async () => {
-    if (!match.mutualTeachSkill || !match.mutualLearnSkill) {
+    // Updated field names
+    if (!match.skillTheyCanTeachYou || !match.skillYouCanTeachThem) {
       toast.error('Cannot send request - no specific skill match found');
       return;
     }
@@ -16,9 +17,10 @@ const MatchCard = ({ match }) => {
       setLoading(true);
       await swapRequestsAPI.createRequest({
         receiverId: match.user.id,
-        teachSkillId: match.mutualTeachSkill.id,
-        learnSkillId: match.mutualLearnSkill.id,
-        message: message || `Hi! I'd like to exchange ${match.mutualTeachSkill.name} for ${match.mutualLearnSkill.name}`
+        // FIXED: Correct skill mapping
+        teachSkillId: match.skillYouCanTeachThem.id, // Skill YOU will teach (You → Them)
+        learnSkillId: match.skillTheyCanTeachYou.id, // Skill YOU want to learn (They → You)
+        message: message || `Hi! I'd like to teach you ${match.skillYouCanTeachThem.name} in exchange for learning ${match.skillTheyCanTeachYou.name} from you.`
       });
       toast.success('Swap request sent!');
       setMessage('');
@@ -154,35 +156,35 @@ const MatchCard = ({ match }) => {
         {match.matchDescription}
       </div>
 
-      {match.mutualTeachSkill && match.mutualLearnSkill && (
+      {/* Updated field names in display */}
+      {match.skillYouCanTeachThem && match.skillTheyCanTeachYou && (
         <div style={{ marginBottom: '1rem' }}>
           <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
             <strong>Proposed Exchange:</strong>
           </p>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-            You teach <strong>{match.mutualTeachSkill.name}</strong> 
+            You teach <strong>{match.skillYouCanTeachThem.name}</strong> 
             {' '}↔{' '}
-            You learn <strong>{match.mutualLearnSkill.name}</strong>
+            You learn <strong>{match.skillTheyCanTeachYou.name}</strong>
           </p>
         </div>
       )}
 
+      {/* Updated section titles and content */}
       <div style={styles.skillsSection}>
-        <div style={styles.sectionTitle}>Skills they can teach:</div>
+        <div style={styles.sectionTitle}>Skills they can teach you:</div>
         <div style={styles.skillList}>
-          {/* This would come from API - for now just show the mutual one */}
-          {match.mutualLearnSkill && (
-            <span style={styles.skillTag}>{match.mutualLearnSkill.name}</span>
+          {match.skillTheyCanTeachYou && (
+            <span style={styles.skillTag}>{match.skillTheyCanTeachYou.name}</span>
           )}
         </div>
       </div>
 
       <div style={styles.skillsSection}>
-        <div style={styles.sectionTitle}>Skills they want to learn:</div>
+        <div style={styles.sectionTitle}>Skills you can teach them:</div>
         <div style={styles.skillList}>
-          {/* This would come from API - for now just show the mutual one */}
-          {match.mutualTeachSkill && (
-            <span style={styles.skillTag}>{match.mutualTeachSkill.name}</span>
+          {match.skillYouCanTeachThem && (
+            <span style={styles.skillTag}>{match.skillYouCanTeachThem.name}</span>
           )}
         </div>
       </div>
@@ -200,7 +202,8 @@ const MatchCard = ({ match }) => {
           ...(loading ? styles.disabledButton : {})
         }}
         onClick={handleSendRequest}
-        disabled={loading || !match.mutualTeachSkill || !match.mutualLearnSkill}
+        // Updated field names in disabled condition
+        disabled={loading || !match.skillTheyCanTeachYou || !match.skillYouCanTeachThem}
       >
         {loading ? 'Sending...' : 'Send Swap Request'}
       </button>

@@ -20,11 +20,20 @@ public class MatchController {
     @Autowired
     private UserService userService;
 
+    // Original endpoint - returns all matches sorted by score
     @GetMapping
     public ResponseEntity<List<MatchDTO>> getMatches(@RequestHeader("Authorization") String authHeader) {
         Long userId = getUserIdFromToken(authHeader);
         List<MatchDTO> matches = matchService.findMatchesForUser(userId);
         return ResponseEntity.ok(matches);
+    }
+
+    // New endpoint - returns categorized matches (perfect, good, potential)
+    @GetMapping("/categorized")
+    public ResponseEntity<Map<String, List<MatchDTO>>> getCategorizedMatches(@RequestHeader("Authorization") String authHeader) {
+        Long userId = getUserIdFromToken(authHeader);
+        Map<String, List<MatchDTO>> categorizedMatches = matchService.findCategorizedMatchesForUser(userId);
+        return ResponseEntity.ok(categorizedMatches);
     }
 
     @GetMapping("/skill/{skillId}")

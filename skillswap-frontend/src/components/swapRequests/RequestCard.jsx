@@ -1,4 +1,12 @@
-const RequestCard = ({ request, type, onAccept, onReject, onCancel }) => {
+const RequestCard = ({ 
+  request, 
+  type, 
+  onAccept, 
+  onReject, 
+  onCancel,
+  onCreateSession,
+  loadingCreate
+}) => {
   const isPending = request.status === 'PENDING';
   const isSent = type === 'sent';
 
@@ -146,6 +154,15 @@ const RequestCard = ({ request, type, onAccept, onReject, onCancel }) => {
       cursor: 'pointer',
       fontWeight: 500,
     },
+    createButton: {
+      backgroundColor: '#2563eb',
+      color: 'white',
+      border: 'none',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.5rem',
+      cursor: 'pointer',
+      fontWeight: 500,
+    },
   };
 
   const getStatusStyle = () => {
@@ -183,12 +200,12 @@ const RequestCard = ({ request, type, onAccept, onReject, onCancel }) => {
       <div style={styles.exchangeInfo}>
         <div style={styles.exchangeRow}>
           <div style={styles.skillCard}>
-            <p style={styles.skillType}>You Teach</p>
+            <p style={styles.skillType}>You learn</p>
             <h4 style={styles.skillName}>{request.teachSkill.name}</h4>
           </div>
           <span style={styles.arrow}>↔</span>
           <div style={styles.skillCard}>
-            <p style={styles.skillType}>You Learn</p>
+            <p style={styles.skillType}>You teach</p>
             <h4 style={styles.skillName}>{request.learnSkill.name}</h4>
           </div>
         </div>
@@ -234,6 +251,14 @@ const RequestCard = ({ request, type, onAccept, onReject, onCancel }) => {
 
       {!isPending && request.status === 'ACCEPTED' && (
         <div style={styles.footer}>
+          <button
+            style={styles.createButton}
+            onClick={() => onCreateSession(request.id)}
+            disabled={loadingCreate}
+          >
+            {loadingCreate ? "Creating..." : "Create Session"}
+          </button>
+
           <button
             style={styles.viewButton}
             onClick={() => window.location.href = '/sessions'}

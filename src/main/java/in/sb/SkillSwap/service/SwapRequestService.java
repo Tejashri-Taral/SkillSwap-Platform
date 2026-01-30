@@ -1,9 +1,11 @@
 package in.sb.SkillSwap.service;
 
+import in.sb.SkillSwap.dto.SessionDTO;
 import in.sb.SkillSwap.dto.SwapRequestCreateDTO;
 import in.sb.SkillSwap.dto.SwapRequestDTO;
 import in.sb.SkillSwap.exception.AuthException;
 import in.sb.SkillSwap.model.*;
+import in.sb.SkillSwap.repository.SessionRepository;
 import in.sb.SkillSwap.repository.SkillRepository;
 import in.sb.SkillSwap.repository.SwapRequestRepository;
 import in.sb.SkillSwap.repository.UserRepository;
@@ -32,6 +34,9 @@ public class SwapRequestService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private SessionRepository sessionRepository;
 
     // Create a new swap request
     @Transactional
@@ -107,8 +112,21 @@ public class SwapRequestService {
         swapRequest.setStatus(SwapRequestStatus.ACCEPTED);
         SwapRequest updatedRequest = swapRequestRepository.save(swapRequest);
 
-        // Create a session for this swap
-        sessionService.createSessionFromSwapRequest(updatedRequest);
+        // Create a session for this swap (with Jitsi link)
+        try {
+            // Check if session already exists
+            List<Session> existingSessions = sessionRepository.findBySwapRequest(updatedRequest);
+            if (existingSessions.isEmpty()) {
+                SessionDTO session = sessionService.createSessionFromSwapRequest(updatedRequest);
+                System.out.println("✅ Session created with Jitsi link: " + session.getMeetingUrl());
+            } else {
+                System.out.println("ℹ️ Session already exists for swap request: " + requestId);
+            }
+        } catch (Exception e) {
+            // Log error but don't fail the request acceptance
+            System.err.println("❌ Failed to create session: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return convertToDTO(updatedRequest);
     }
